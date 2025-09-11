@@ -1,6 +1,6 @@
 using System.IO.Pipelines;
 
-namespace PerimeterCalculator;
+namespace ObjectCalculator.PerimeterCalculator;
 
 public class Perimeter()
 {

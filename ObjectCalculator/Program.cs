@@ -1,5 +1,5 @@
-﻿using PerimeterCalculator;
-using AreaCalculator;
+﻿using ObjectCalculator.PerimeterCalculator;
+using ObjectCalculator.AreaCalculator;
 
 namespace ObjectCalculator;
 
