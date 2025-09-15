@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoEventHandler", "DemoEve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoEnum", "DemoEnum\DemoEnum.csproj", "{102F1C83-9F71-4087-AA8A-C1C864EF161C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrialAndError2", "TrialAndError2\TrialAndError2.csproj", "{100A2459-0734-4890-974E-AA63D604AADD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -237,6 +239,18 @@ Global
 		{102F1C83-9F71-4087-AA8A-C1C864EF161C}.Release|x64.Build.0 = Release|Any CPU
 		{102F1C83-9F71-4087-AA8A-C1C864EF161C}.Release|x86.ActiveCfg = Release|Any CPU
 		{102F1C83-9F71-4087-AA8A-C1C864EF161C}.Release|x86.Build.0 = Release|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Debug|x64.Build.0 = Debug|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Debug|x86.Build.0 = Debug|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Release|x64.ActiveCfg = Release|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Release|x64.Build.0 = Release|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Release|x86.ActiveCfg = Release|Any CPU
+		{100A2459-0734-4890-974E-AA63D604AADD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
