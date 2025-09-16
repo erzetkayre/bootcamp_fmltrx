@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoEnum", "DemoEnum\DemoEn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrialAndError2", "TrialAndError2\TrialAndError2.csproj", "{100A2459-0734-4890-974E-AA63D604AADD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practice", "Practice\Practice.csproj", "{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -251,6 +253,18 @@ Global
 		{100A2459-0734-4890-974E-AA63D604AADD}.Release|x64.Build.0 = Release|Any CPU
 		{100A2459-0734-4890-974E-AA63D604AADD}.Release|x86.ActiveCfg = Release|Any CPU
 		{100A2459-0734-4890-974E-AA63D604AADD}.Release|x86.Build.0 = Release|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Debug|x64.Build.0 = Debug|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Debug|x86.Build.0 = Debug|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Release|x64.Build.0 = Release|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD24AA57-8C31-4DE3-8746-7E533CDFAEAD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

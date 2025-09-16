@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Microsoft.VisualBasic;
 
 public class Program
 {
@@ -73,14 +74,47 @@ public class Program
             }
         }
 
+        IEnumerable<int> Primes(int primeNum)
+        {
+            for (int i = 2; i <= primeNum; i++)
+            {
+                bool isPrime = true;
+                for (int nums = 2; nums <= Math.Sqrt(i); nums++)
+                {
+                    if ((i % nums) == 0)
+                    {
+                        isPrime = false;
+                        break;
+                    }
+                }
+            if (isPrime) 
+                yield return i;
+            }
+        }
+
+        IEnumerable<int> Range (int start, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                yield return start + i;
+            }
+        }
+
         IEnumerable<int> OddNumberOnly(IEnumerable<int> sequence)
         {
             foreach (int x in sequence)
             {
                 if ((x % 2) == 1)
-                {
                     yield return x;
-                }
+            }
+        }
+
+        IEnumerable<int> EvenNumberOnly(IEnumerable<int> sequence)
+        {
+            foreach (int i in sequence)
+            {
+                if ((i % 2) == 0)
+                    yield return i;
             }
         }
 
@@ -89,7 +123,22 @@ public class Program
 
         Console.WriteLine();
 
-        foreach (int fib in OddNumberOnly(Fibs(8)))
+        foreach (int fib in OddNumberOnly(Fibs(6)))
             Console.Write(fib + "   ");
+
+        Console.WriteLine();
+
+        foreach (int fib in EvenNumberOnly(Fibs(6)))
+            Console.Write(fib + "   ");
+
+        Console.WriteLine();
+
+        foreach (int prime in Primes(30))
+            Console.Write(prime + "   ");
+
+        Console.WriteLine();
+
+        foreach (int n in Range(5,5))
+            Console.Write(n + "   ");
     }
 }

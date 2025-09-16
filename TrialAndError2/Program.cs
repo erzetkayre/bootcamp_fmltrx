@@ -3,7 +3,7 @@
     static void Main()
     {
         Console.WriteLine("Masukkan Nama Kucing 1: ");
-        string catName1 = Console.ReadLine() ?? "Mery";
+        string catName1 = Console.ReadLine() ?? "Unknown";
         Console.WriteLine();
         Console.WriteLine("Masukkan Nama Kucing 2: ");
         string catName2 = Console.ReadLine() ?? "Unknown";

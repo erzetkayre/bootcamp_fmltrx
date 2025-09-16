@@ -6,7 +6,7 @@ public class Dog
     public event EventHandler? OnBark;
 
     public void Bark()
-    {
+    {   
         Console.WriteLine($"{Name} is barking");
         OnBark?.Invoke(this, EventArgs.Empty);
     }

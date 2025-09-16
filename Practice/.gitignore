@@ -171,7 +171,6 @@ AutoTest.Net/
 
 # Installshield output folder
 [Ee]xpress/
-Bootcamp/
 
 # DocProject is a documentation generator add-in
 DocProject/buildhelp/
@@ -483,6 +482,3 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-
-# Additional
-cek.cs
