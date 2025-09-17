@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practice", "Practice\Practi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dump", "dump\dump.csproj", "{4F90FCF4-405F-482D-AA3E-917DCCF5045F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkFundamentals", "FrameworkFundamentals\FrameworkFundamentals.csproj", "{6907180D-FB18-4B19-9D47-BCFF6A664112}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -279,6 +281,18 @@ Global
 		{4F90FCF4-405F-482D-AA3E-917DCCF5045F}.Release|x64.Build.0 = Release|Any CPU
 		{4F90FCF4-405F-482D-AA3E-917DCCF5045F}.Release|x86.ActiveCfg = Release|Any CPU
 		{4F90FCF4-405F-482D-AA3E-917DCCF5045F}.Release|x86.Build.0 = Release|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Debug|x64.Build.0 = Debug|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Debug|x86.Build.0 = Debug|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Release|x64.ActiveCfg = Release|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Release|x64.Build.0 = Release|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Release|x86.ActiveCfg = Release|Any CPU
+		{6907180D-FB18-4B19-9D47-BCFF6A664112}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
