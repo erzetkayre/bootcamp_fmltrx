@@ -1,0 +1,908 @@
+classDiagram
+    %% Enums
+    class CardColor {
+        <<enumeration>>
+        Red
+        Blue
+        Green
+        Yellow
+        Wild
+    }
+
+    class CardType {
+        <<enumeration>>
+        Number
+        Skip
+        Reverse
+        DrawTwo
+        Wild
+        WildDrawFour
+    }
+
+    class GameState {
+        <<enumeration>>
+        InProgress
+        PlayerWins
+        BotWins
+    }
+
+    %% Abstract Card
+    class Card {
+        <<abstract>>
+        +Color: CardColor
+        +Type: CardType
+        +Value: int
+        +Card(color: CardColor, type: CardType, value: int)
+        +CanPlayOn(topCard: Card): bool*
+        +ToString(): string
+    }
+
+    %% Concrete Cards
+    class NumberCard
+    class SkipCard
+    class ReverseCard
+    class DrawTwoCard
+    class WildCard {
+        +ChosenColor: CardColor
+        +SetColor(color: CardColor): void
+    }
+    class WildDrawFourCard {
+        +ChosenColor: CardColor
+        +SetColor(color: CardColor): void
+    }
+
+    %% Player
+    class Player {
+        +Name: string
+        +Hand: List~Card~
+        +DrawCard(card: Card): void
+        +PlayCard(card: Card): bool
+        +ChooseCardToPlay(topCard: Card): Card*
+        +ChooseWildColor(): CardColor*
+    }
+
+    %% Deck
+    class Deck {
+        -cards: Stack~Card~
+        +DrawCard(): Card
+        +IsEmpty(): bool
+    }
+
+    %% Game Engine
+    class GameEngine {
+        -players: List~Player~
+        -deck: Deck
+        -discardPile: Stack~Card~
+        -currentPlayerIndex: int
+        -direction: int
+        -gameState: GameState
+
+        %% ==== Action Delegate Hooks ====
+        +OnCardPlayed: Action~Player, Card~
+        +OnTurnChanged: Action~Player~
+        +OnGameEnded: Action~Player~
+
+        +StartGame(): void
+        +PlayTurn(): void
+        -HandleSpecialCard(card: Card, player: Player): void
+        -NextTurn(): void
+    }
+
+    %% Relationships
+    Card <|-- NumberCard
+    Card <|-- SkipCard
+    Card <|-- ReverseCard
+    Card <|-- DrawTwoCard
+    Card <|-- WildCard
+    Card <|-- WildDrawFourCard
+
+    GameEngine --> Player : manages
+    GameEngine --> Deck : uses
+    Player --> Card : has
+    Deck --> Card : contains
+===============================================================================================
+
+classDiagram
+    %% Enums
+    class CardColor {
+        <<enumeration>>
+        Red
+        Blue
+        Green
+        Yellow
+        Wild
+    }
+
+    class CardType {
+        <<enumeration>>
+        Number
+        Skip
+        Reverse
+        DrawTwo
+        Wild
+        WildDrawFour
+    }
+
+    class GameState {
+        <<enumeration>>
+        InProgress
+        PlayerWins
+        BotWins
+    }
+
+    class PlayerType {
+        <<enumeration>>
+        Human
+        Bot
+    }
+
+    %% Abstract Classes
+    class Card {
+        <<abstract>>
+        +Color: CardColor
+        +Type: CardType
+        +Value: int
+        +Card(color: CardColor, type: CardType, value: int)
+        +CanPlayOn(topCard: Card): bool*
+        +ToString(): string
+    }
+
+    class Player {
+        <<abstract>>
+        +Name: string
+        +Hand: List~Card~
+        +Type: PlayerType
+        +Player(name: string, type: PlayerType)
+        +DrawCard(card: Card): void
+        +PlayCard(card: Card): bool
+        +HasValidCard(topCard: Card): bool
+        +GetCardCount(): int
+        +ChooseCardToPlay(topCard: Card): Card*
+        +ChooseWildColor(): CardColor*
+    }
+
+    %% Concrete Card Classes
+    class NumberCard {
+        +NumberCard(color: CardColor, value: int)
+        +CanPlayOn(topCard: Card): bool
+    }
+
+    class SkipCard {
+        +SkipCard(color: CardColor)
+        +CanPlayOn(topCard: Card): bool
+    }
+
+    class ReverseCard {
+        +ReverseCard(color: CardColor)
+        +CanPlayOn(topCard: Card): bool
+    }
+
+    class DrawTwoCard {
+        +DrawTwoCard(color: CardColor)
+        +CanPlayOn(topCard: Card): bool
+    }
+
+    class WildCard {
+        +ChosenColor: CardColor
+        +WildCard()
+        +CanPlayOn(topCard: Card): bool
+        +SetColor(color: CardColor): void
+        +ToString(): string
+    }
+
+    class WildDrawFourCard {
+        +ChosenColor: CardColor
+        +WildDrawFourCard()
+        +CanPlayOn(topCard: Card): bool
+        +SetColor(color: CardColor): void
+        +ToString(): string
+    }
+
+    %% Player Implementations
+    class HumanPlayer {
+        +HumanPlayer(name: string)
+        +ChooseCardToPlay(topCard: Card): Card
+        +ChooseWildColor(): CardColor
+        -DisplayHand(): void
+        -GetPlayerInput(): string
+        -ValidateCardSelection(input: string): Card
+    }
+
+    class BotPlayer {
+        -random: Random
+        -botNames: List~string~
+        +BotPlayer()
+        +ChooseCardToPlay(topCard: Card): Card
+        +ChooseWildColor(): CardColor
+        -GetPlayableCards(topCard: Card): List~Card~
+        -SelectRandomCard(cards: List~Card~): Card
+        -SelectRandomColor(): CardColor
+        -GetRandomBotName(): string
+    }
+
+    %% Factory
+    class UnoCardFactory {
+        +CreateDeck(): List~Card~
+        -CreateNumberCards(): List~Card~
+        -CreateActionCards(): List~Card~
+        -CreateWildCards(): List~Card~
+    }
+
+    %% Game Components
+    class Deck {
+        -cards: Stack~Card~
+        +CardCount: int
+        +Deck(cardList: List~Card~)
+        +DrawCard(): Card
+        +IsEmpty(): bool
+        +AddCards(cards: List~Card~): void
+        -Shuffle(cards: List~Card~): List~Card~
+    }
+
+    class GameEngine {
+        -humanPlayer: HumanPlayer
+        -botPlayers: List~BotPlayer~
+        -allPlayers: List~Player~
+        -deck: Deck
+        -discardPile: Stack~Card~
+        -topCard: Card
+        -currentPlayerIndex: int
+        -direction: int
+        -gameState: GameState
+        -numberOfBots: int
+        
+        +GameEngine(playerName: string, numberOfBots: int)
+        +StartGame(): void
+        +PlayGame(): void
+        -InitializeGame(): void
+        -DealCards(): void
+        -GameLoop(): void
+        -ProcessPlayerTurn(player: Player): void
+        -ProcessCardPlay(player: Player, card: Card): void
+        -HandleSpecialCard(card: Card, player: Player): void
+        -HandleSkipCard(): void
+        -HandleReverseCard(): void
+        -HandleDrawTwoCard(): void
+        -HandleWildCard(wildCard: WildCard, player: Player): void
+        -HandleWildDrawFourCard(wildCard: WildDrawFourCard, player: Player): void
+        -NextTurn(): void
+        -SkipNextPlayer(): void
+        -ReverseDirection(): void
+        -CheckWinCondition(): bool
+        -DisplayGameState(): void
+        -DisplayTurnInfo(player: Player): void
+        -GetEffectiveTopCard(): Card
+        -ReshuffleDiscardPile(): void
+    }
+
+    %% Program Entry
+    class Program {
+        +Main(args: string[]): void
+        -GetPlayerName(): string
+        -GetNumberOfBots(): int
+        -ShowWelcomeMessage(): void
+    }
+
+    %% Relationships
+    Card <|-- NumberCard
+    Card <|-- SkipCard  
+    Card <|-- ReverseCard
+    Card <|-- DrawTwoCard
+    Card <|-- WildCard
+    Card <|-- WildDrawFourCard
+
+    Player <|-- HumanPlayer
+    Player <|-- BotPlayer
+
+    GameEngine --> HumanPlayer : contains
+    GameEngine --> BotPlayer : contains 1-4 bots
+    GameEngine --> Deck : uses
+    GameEngine --> Card : manages topCard
+    GameEngine --> UnoCardFactory : creates deck
+
+    Player --> Card : has in hand
+    Deck --> Card : contains
+    UnoCardFactory --> Card : creates
+
+    Program --> GameEngine : creates and starts
+
+    %% Notes
+    note for BotPlayer "Simple AI: picks first playable card randomly"
+    note for GameEngine "Supports 1 human + 1-4 bots"
+    note for Player "Template Method pattern for card selection"
+
+
+===============================================================================================
+
+classDiagram
+    %% Enums
+    class CardColor {
+        <<enumeration>>
+        Red
+        Blue
+        Green
+        Yellow
+        Wild
+    }
+
+    class CardType {
+        <<enumeration>>
+        Number
+        Skip
+        Reverse
+        DrawTwo
+        Wild
+        WildDrawFour
+    }
+
+    class GameState {
+        <<enumeration>>
+        WaitingForPlayers
+        InProgress
+        Finished
+    }
+
+    %% Abstract Base Classes
+    class Card {
+        <<abstract>>
+        +Color: CardColor
+        +Type: CardType
+        +Value: int
+        +Card(color: CardColor, type: CardType, value: int)
+        +CanPlayOn(topCard: Card): bool*
+        +ToString(): string
+    }
+
+    %% Concrete Card Classes
+    class NumberCard {
+        +NumberCard(color: CardColor, value: int)
+        +CanPlayOn(topCard: Card): bool
+    }
+
+    class SkipCard {
+        +SkipCard(color: CardColor)
+        +CanPlayOn(topCard: Card): bool
+    }
+
+    class ReverseCard {
+        +ReverseCard(color: CardColor)
+        +CanPlayOn(topCard: Card): bool
+    }
+
+    class DrawTwoCard {
+        +DrawTwoCard(color: CardColor)
+        +CanPlayOn(topCard: Card): bool
+    }
+
+    class WildCard {
+        +ChosenColor: CardColor
+        +WildCard()
+        +CanPlayOn(topCard: Card): bool
+        +SetColor(color: CardColor): void
+    }
+
+    class WildDrawFourCard {
+        +ChosenColor: CardColor
+        +WildDrawFourCard()
+        +CanPlayOn(topCard: Card): bool
+        +SetColor(color: CardColor): void
+    }
+
+    %% Interfaces
+    class ICardFactory {
+        <<interface>>
+        +CreateDeck(): List~Card~
+    }
+
+    class IGameObserver {
+        <<interface>>
+        +OnPlayerTurn(player: Player): void
+        +OnCardPlayed(player: Player, card: Card): void
+        +OnGameStateChanged(newState: GameState): void
+        +OnPlayerWon(winner: Player): void
+    }
+
+    class ICardValidator {
+        <<interface>>
+        +CanPlayCard(card: Card, topCard: Card): bool
+    }
+
+    %% Factory Pattern
+    class UnoCardFactory {
+        +CreateDeck(): List~Card~
+        -CreateNumberCards(): List~Card~
+        -CreateActionCards(): List~Card~
+        -CreateWildCards(): List~Card~
+    }
+
+    %% Strategy Pattern for Card Validation
+    class CardValidator {
+        +CanPlayCard(card: Card, topCard: Card): bool
+    }
+
+    %% Player Class
+    class Player {
+        +Id: string
+        +Name: string
+        +Hand: List~Card~
+        +IsActive: bool
+        +OnCardPlayed: Action~Player, Card~
+        +OnHandEmpty: Action~Player~
+        +Player(id: string, name: string)
+        +DrawCard(card: Card): void
+        +PlayCard(card: Card): bool
+        +HasValidCard(topCard: Card): bool
+        +GetCardCount(): int
+        +CallUno(): void
+    }
+
+    %% Deck Management
+    class Deck {
+        -cards: Stack~Card~
+        +CardCount: int
+        +OnDeckEmpty: Action
+        +Deck(cards: List~Card~)
+        +DrawCard(): Card
+        +IsEmpty(): bool
+        +Shuffle(): void
+    }
+
+    class DiscardPile {
+        -cards: Stack~Card~
+        +TopCard: Card
+        +CardCount: int
+        +DiscardPile()
+        +AddCard(card: Card): void
+        +GetTopCard(): Card
+        +Clear(): List~Card~
+    }
+
+    %% Game Actions (Command Pattern)
+    class IGameAction {
+        <<interface>>
+        +Execute(game: UnoGame): void
+        +CanExecute(game: UnoGame): bool
+    }
+
+    class PlayCardAction {
+        -player: Player
+        -card: Card
+        -chosenColor: CardColor
+        +PlayCardAction(player: Player, card: Card, chosenColor: CardColor)
+        +Execute(game: UnoGame): void
+        +CanExecute(game: UnoGame): bool
+    }
+
+    class DrawCardAction {
+        -player: Player
+        +DrawCardAction(player: Player)
+        +Execute(game: UnoGame): void
+        +CanExecute(game: UnoGame): bool
+    }
+
+    class SkipTurnAction {
+        -player: Player
+        +SkipTurnAction(player: Player)
+        +Execute(game: UnoGame): void
+        +CanExecute(game: UnoGame): bool
+    }
+
+    %% Turn Manager
+    class TurnManager {
+        -players: List~Player~
+        -currentPlayerIndex: int
+        -direction: int
+        +CurrentPlayer: Player
+        +OnTurnChanged: Action~Player~
+        +OnDirectionChanged: Action~bool~
+        +TurnManager(players: List~Player~)
+        +NextTurn(): Player
+        +ReverseDirection(): void
+        +SkipCurrentPlayer(): void
+        +GetNextPlayer(): Player
+    }
+
+    %% Main Game Class
+    class UnoGame {
+        -players: List~Player~
+        -deck: Deck
+        -discardPile: DiscardPile
+        -turnManager: TurnManager
+        -cardValidator: ICardValidator
+        -observers: List~IGameObserver~
+        -gameState: GameState
+        +CurrentPlayer: Player
+        +TopCard: Card
+        +GameState: GameState
+        +OnGameStateChanged: Action~GameState~
+        +OnPlayerWon: Action~Player~
+        +OnCardPlayed: Action~Player, Card~
+        +OnTurnChanged: Action~Player~
+        +UnoGame(playerNames: List~string~)
+        +StartGame(): void
+        +PlayCard(player: Player, card: Card, chosenColor: CardColor): bool
+        +DrawCard(player: Player): void
+        +CanPlayCard(player: Player, card: Card): bool
+        +AddObserver(observer: IGameObserver): void
+        +RemoveObserver(observer: IGameObserver): void
+        -NotifyObservers(): void
+        -CheckWinCondition(): bool
+        -HandleSpecialCard(card: Card): void
+        -ShuffleDiscardPileIntoDeck(): void
+    }
+
+    %% Game Observer Implementation
+    class GameLogger {
+        +OnPlayerTurn(player: Player): void
+        +OnCardPlayed(player: Player, card: Card): void
+        +OnGameStateChanged(newState: GameState): void
+        +OnPlayerWon(winner: Player): void
+    }
+
+    class GameUI {
+        +OnPlayerTurn(player: Player): void
+        +OnCardPlayed(player: Player, card: Card): void
+        +OnGameStateChanged(newState: GameState): void
+        +OnPlayerWon(winner: Player): void
+        +UpdateDisplay(): void
+    }
+
+    %% Relationships
+    Card <|-- NumberCard
+    Card <|-- SkipCard
+    Card <|-- ReverseCard
+    Card <|-- DrawTwoCard
+    Card <|-- WildCard
+    Card <|-- WildDrawFourCard
+
+    ICardFactory <|.. UnoCardFactory
+    ICardValidator <|.. CardValidator
+    IGameObserver <|.. GameLogger
+    IGameObserver <|.. GameUI
+    IGameAction <|.. PlayCardAction
+    IGameAction <|.. DrawCardAction
+    IGameAction <|.. SkipTurnAction
+
+    UnoGame --> TurnManager : manages
+    UnoGame --> Deck : uses
+    UnoGame --> DiscardPile : uses
+    UnoGame --> ICardValidator : validates with
+    UnoGame --> Player : contains
+    UnoGame --> IGameObserver : notifies
+
+    Player --> Card : has
+    Deck --> Card : contains
+    DiscardPile --> Card : contains
+    TurnManager --> Player : manages
+
+    UnoCardFactory --> Card : creates
+    PlayCardAction --> Player : acts on
+    PlayCardAction --> Card : plays
+    DrawCardAction --> Player : acts on
+    SkipTurnAction --> Player : acts on
+
+===============================================================================================
+
+
+classDiagram
+    %% Enums
+    class CardColor {
+        <<enumeration>>
+        Red
+        Blue
+        Green
+        Yellow
+        Wild
+    }
+
+    class CardType {
+        <<enumeration>>
+        Number
+        Skip
+        Reverse
+        DrawTwo
+        Wild
+        WildDrawFour
+    }
+
+    class GameState {
+        <<enumeration>>
+        InProgress
+        PlayerWins
+        BotWins
+    }
+
+    class PlayerType {
+        <<enumeration>>
+        Human
+        Bot
+    }
+
+    %% Abstract Card
+    class Card {
+        <<abstract>>
+        +Color: CardColor
+        +Type: CardType
+        +Value: int
+        +Card(color: CardColor, type: CardType, value: int)
+        +CanPlayOn(topCard: Card): bool*
+        +ToString(): string
+    }
+
+    %% Player base class
+    class Player {
+        <<abstract>>
+        +Name: string
+        +Hand: List~Card~
+        +Type: PlayerType
+        +OnPlayCard: Action~Player, Card~
+        +OnChooseColor: Func~Player, CardColor~
+        +Player(name: string, type: PlayerType)
+        +DrawCard(card: Card): void
+        +PlayCard(card: Card): bool
+        +HasValidCard(topCard: Card): bool
+        +GetCardCount(): int
+        +ChooseCardToPlay(topCard: Card): Card*
+    }
+
+    %% HumanPlayer
+    class HumanPlayer {
+        +HumanPlayer(name: string)
+        -DisplayHand(): void
+        -GetPlayerInput(): string
+        -ValidateCardSelection(input: string): Card
+    }
+
+    %% BotPlayer
+    class BotPlayer {
+        -random: Random
+        -botNames: List~string~
+        +BotPlayer()
+        -GetPlayableCards(topCard: Card): List~Card~
+        -SelectRandomCard(cards: List~Card~): Card
+        -SelectRandomColor(): CardColor
+        -GetRandomBotName(): string
+    }
+
+    %% Delegates hub in GameEngine
+    class GameEngine {
+        -humanPlayer: HumanPlayer
+        -botPlayers: List~BotPlayer~
+        -allPlayers: List~Player~
+        -deck: Deck
+        -discardPile: Stack~Card~
+        -topCard: Card
+        -currentPlayerIndex: int
+        -direction: int
+        -gameState: GameState
+
+        %% Delegate hooks
+        +OnTurnStarted: Action~Player~
+        +OnCardPlayed: Action~Player, Card~
+        +OnColorChosen: Action~Player, CardColor~
+        +OnGameStateChanged: Action~GameState~
+        
+        +GameEngine(playerName: string, numberOfBots: int)
+        +StartGame(): void
+        +PlayGame(): void
+    }
+
+    %% Factory & Deck
+    class UnoCardFactory {
+        +CreateDeck(): List~Card~
+    }
+
+    class Deck {
+        -cards: Stack~Card~
+        +CardCount: int
+        +Deck(cardList: List~Card~)
+        +DrawCard(): Card
+        +IsEmpty(): bool
+        +AddCards(cards: List~Card~): void
+    }
+
+    class Program {
+        +Main(args: string[]): void
+    }
+
+    %% Relationships
+    Player <|-- HumanPlayer
+    Player <|-- BotPlayer
+    GameEngine --> Player
+    GameEngine --> Deck
+    GameEngine --> Card
+    GameEngine --> UnoCardFactory
+    Player --> Card
+    Deck --> Card
+    UnoCardFactory --> Card
+    Program --> GameEngine
+
+
+===============================================================================================
+
+
+classDiagram
+    Card <|-- NumberCard
+    Card <|-- ActionCard
+    Card <|-- WildCard
+
+    Card --* Deck
+    Player --* Card
+    UnoGame --* Player
+    UnoGame --* Deck
+
+    class Player {
+        +int Id
+        +string Name
+        +List<Card> Hand
+        +bool IsPlaying
+        +DrawCard(Deck)
+        +PlayCard(Card, DiscardPile)
+        +HasWon(): bool
+    }
+
+    class CardColor {
+        <<enumeration>>
+        Green
+        Blue
+        Red
+        Yellow
+        Wild
+    }
+
+    class CardValue {
+        <<enumeration>>
+        Zero
+        One
+        Two
+        Three
+        Four
+        Five
+        Six
+        Seven
+        Eight
+        Nine
+        Skip
+        Reverse
+        DrawTwo
+        Wild
+        WildDrawFour
+    }
+
+    class Card{
+        <<abstract>>
+        +CardValue Value
+        +CardColor Color
+        +IsPlayableOnTop(Card): bool
+        +ApplyEffect(UnoGame)
+    }
+
+    class NumberCard {
+        +NumberCard(CardColor, CardValue)
+    }
+
+   class ActionCard {
+        +ActionCard(CardColor color)
+        +IsPlayableOnTop()
+        +SkipCard()
+        +ReverseCard()
+        +DrawTwoCard()
+    }
+
+    class WildCard {
+        +WildCard(CardColor color)
+        +IsPlayableOnTop()
+        +WildDrawFourCard()
+        +WildCard()
+    }
+
+
+    class UnoGame{
+        +AddPlayer(Player)
+        +StartGame()
+        +NextTurn()
+        +SkipNextPlayer()
+        +ReverseTurn()
+        +ApplyCardEffect(Card)
+    }
+
+    class Deck {
+        +Shuffle()
+        +Draw(): Card
+        +RefillFrom(DiscardPile)
+    }
+
+    class DiscardPile {
+        +AddCard(Card)
+        +TopCard(): Card
+        +TakeAllExceptTop(): List<Card>
+    }
+
+
+===============================================================================================
+
+
+classDiagram
+
+    Card <|-- ActionCard
+    Card <|-- NumberCard
+    Card <|-- WildCard
+    Card --* Deck
+    Card --* Player
+    
+    class Player {
+        +int Id : readonly
+        +int isPlaying
+        +string namePlayer
+        +Card:List<Card>
+    }
+
+    class CardColor {
+        <<enumeration>>
+        Green,
+        Blue,
+        Red,
+        Yellow,
+        Wild,
+    }
+
+    class ActionCard {
+        +ActionCard(CardColor color)
+        +IsPlayableOnTop()
+        +SkipCard()
+        +ReverseCard()
+        +DrawTwoCard()
+    }
+
+    class WildCard {
+        +WildCard(CardColor color)
+        +IsPlayableOnTop()
+        +WildDrawFourCard()
+        +WildCard()
+    }
+
+    class NumberCard {
+        +NumberCard(, CardColor color)
+    }
+
+    class CardValues{
+        Wild,
+        WildDrawFour,
+        Skip,
+        Reverse,
+        DrawTwo,
+    }
+
+    class CardNumbers {
+        <<enumeration>>
+        Zero,
+        One,
+        Two,
+        Three,
+        Four,
+        Five,
+        Six,
+        Seven,
+        Eight,
+        Nine,
+    }
+
+    class Card{
+        <<abstract>>
+        +CardValue value
+        +CardColor color
+        #card(CardColor color, CardValue value)
+        +IsPlayableOnTop():bool
+        +ApplyEffect()
+    }
+
+    class UnoGame{
+        +AddPlayer() : List<Player player>
+        +SkipNextPLayer()
+        +ReverseTurn()
+    }
+
+    class Deck {
+        +Shuffle()
+    }
+
