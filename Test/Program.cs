@@ -1,301 +1,197 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace UnoUserVsBot
+class Program
 {
-    public enum CardColor { Red, Blue, Green, Yellow, Wild }
-    public enum CardValue { Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine,
-                            Skip, Reverse, DrawTwo, Wild, WildDrawFour }
+    static List<string> unoDeck = new List<string>();
+    static List<string> discards = new List<string>();
+    static List<List<string>> players = new List<List<string>>();
+    static List<string> playersName = new List<string>();
+    static string[] colours = { "Red", "Green", "Yellow", "Blue" };
+    static Random rand = new Random();
 
-    // ================== BASE CARD ==================
-    public abstract class Card
+    static void Main()
     {
-        public CardColor Color { get; protected set; }
-        public CardValue Value { get; protected set; }
+        Console.WriteLine("\n\n============== UNO Card Game ==============\n\n");
 
-        protected Card(CardColor color, CardValue value)
+        unoDeck = BuildDeck();
+        ShuffleDeck(unoDeck);
+        ShuffleDeck(unoDeck);
+
+        int numPlayers;
+        do
         {
-            Color = color;
-            Value = value;
+            Console.Write("How many players? (2-4): ");
+        } while (!int.TryParse(Console.ReadLine(), out numPlayers) || numPlayers < 2 || numPlayers > 4);
+
+        for (int i = 0; i < numPlayers; i++)
+        {
+            Console.Write($"Enter player {i + 1} name: ");
+            playersName.Add(Console.ReadLine());
+            players.Add(DrawCards(5));
         }
 
-        public virtual void SetColor(CardColor newColor)
+        int playerTurn = 0;
+        int playDirection = 1;
+        bool playing = true;
+
+        discards.Add(unoDeck[0]);
+        unoDeck.RemoveAt(0);
+
+        string[] splitCard = discards[0].Split(" ", 2);
+        string currentColour = splitCard[0];
+        string cardVal = currentColour != "Wild" ? splitCard[1] : "Any";
+
+        string winner = "";
+
+        while (playing)
         {
-            if (this.Color != CardColor.Wild)
-                throw new InvalidOperationException("Only wild cards can change color.");
-            this.Color = newColor;
-        }
-        public virtual bool IsPlayableOnTop(Card topCard)
-        {
-            return Color == topCard.Color || Value == topCard.Value || Color == CardColor.Wild;
-        }
+            ShowHand(playerTurn, players[playerTurn]);
+            Console.WriteLine("Card on top of discard pile: " + discards[^1]);
 
-        public virtual void ApplyEffect(UnoGame game) { }
-
-        public override string ToString() => $"{Color} {Value}";
-    }
-
-    // ================== NUMBER CARD ==================
-    public class NumberCard : Card
-    {
-        public NumberCard(CardColor color, CardValue value) : base(color, value) { }
-    }
-
-    // ================== ACTION CARDS ==================
-    public class SkipCard : Card
-    {
-        public SkipCard(CardColor color) : base(color, CardValue.Skip) { }
-        public override void ApplyEffect(UnoGame game)
-        {
-            Console.WriteLine("Effect: Skip next player!");
-            game.SkipNextPlayer();
-        }
-    }
-
-    public class ReverseCard : Card
-    {
-        public ReverseCard(CardColor color) : base(color, CardValue.Reverse) { }
-        public override void ApplyEffect(UnoGame game)
-        {
-            Console.WriteLine("Effect: Reverse turn!");
-            game.ReverseTurn();
-        }
-    }
-
-    public class DrawTwoCard : Card
-    {
-        public DrawTwoCard(CardColor color) : base(color, CardValue.DrawTwo) { }
-        public override void ApplyEffect(UnoGame game)
-        {
-            Console.WriteLine("Effect: Next player draws 2!");
-            game.DrawCardsToNextPlayer(2);
-        }
-    }
-
-    // ================== WILD CARDS ==================
-    public class WildCard : Card
-    {
-        public WildCard() : base(CardColor.Wild, CardValue.Wild) { }
-        public override void ApplyEffect(UnoGame game)
-        {
-            Console.WriteLine("Effect: Player chooses color!");
-            game.ChooseNewColor(this);
-        }
-    }
-
-    public class WildDrawFourCard : Card
-    {
-        public WildDrawFourCard() : base(CardColor.Wild, CardValue.WildDrawFour) { }
-        public override void ApplyEffect(UnoGame game)
-        {
-            Console.WriteLine("Effect: Next player draws 4 + choose color!");
-            game.DrawCardsToNextPlayer(4);
-            game.ChooseNewColor(this);
-        }
-    }
-
-    // ================== DECK & DISCARD ==================
-    public class Deck
-    {
-        private Stack<Card> cards = new Stack<Card>();
-        private static Random rand = new Random();
-
-        public Deck() { GenerateDeck(); Shuffle(); }
-
-        private void GenerateDeck()
-        {
-            foreach (CardColor color in new[] { CardColor.Red, CardColor.Blue, CardColor.Green, CardColor.Yellow })
+            if (CanPlay(currentColour, cardVal, players[playerTurn]))
             {
-                cards.Push(new NumberCard(color, CardValue.One));
-                cards.Push(new SkipCard(color));
-                cards.Push(new ReverseCard(color));
-                cards.Push(new DrawTwoCard(color));
-            }
-            cards.Push(new WildCard());
-            cards.Push(new WildDrawFourCard());
-        }
-
-        public void Shuffle()
-        {
-            var list = cards.ToList();
-            cards.Clear();
-            foreach (var c in list.OrderBy(x => rand.Next()))
-                cards.Push(c);
-        }
-
-        public Card Draw() => cards.Count > 0 ? cards.Pop() : null;
-    }
-
-    public class DiscardPile
-    {
-        private List<Card> cards = new List<Card>();
-        public void AddCard(Card c) => cards.Add(c);
-        public Card TopCard() => cards.LastOrDefault();
-    }
-
-    // ================== PLAYER ==================
-    public class Player
-    {
-        public string Name { get; }
-        public bool IsBot { get; }
-        public List<Card> Hand { get; } = new List<Card>();
-
-        public Player(string name, bool isBot = false)
-        {
-            Name = name;
-            IsBot = isBot;
-        }
-
-        public void DrawCard(Deck deck)
-        {
-            var c = deck.Draw();
-            if (c != null) Hand.Add(c);
-        }
-
-        public void ShowHand()
-        {
-            for (int i = 0; i < Hand.Count; i++)
-                Console.WriteLine($"{i + 1}. {Hand[i]}");
-        }
-
-        public bool HasWon() => Hand.Count == 0;
-    }
-
-    // ================== GAME ==================
-    public class UnoGame
-    {
-        private Deck deck = new Deck();
-        private DiscardPile discard = new DiscardPile();
-        private List<Player> players = new List<Player>();
-        private int currentIndex = 0;
-        private int direction = 1;
-
-        public void AddPlayer(Player p) => players.Add(p);
-
-        public void StartGame()
-        {
-            foreach (var p in players)
-                for (int i = 0; i < 5; i++) p.DrawCard(deck);
-
-            discard.AddCard(deck.Draw());
-            Console.WriteLine($"First card: {discard.TopCard()}");
-
-            while (true)
-            {
-                var current = players[currentIndex];
-                Console.WriteLine($"\n=== {current.Name}'s turn ===");
-                Console.WriteLine($"Top card: {discard.TopCard()}");
-
-                if (current.IsBot)
-                    BotPlay(current);
-                else
-                    UserPlay(current);
-
-                if (current.HasWon())
+                int cardChosen;
+                do
                 {
-                    Console.WriteLine($"{current.Name} wins!");
+                    Console.Write("Which card do you want to play? ");
+                } while (!int.TryParse(Console.ReadLine(), out cardChosen) ||
+                         cardChosen < 1 || cardChosen > players[playerTurn].Count ||
+                         !CanPlay(currentColour, cardVal, new List<string> { players[playerTurn][cardChosen - 1] }));
+
+                string playedCard = players[playerTurn][cardChosen - 1];
+                Console.WriteLine("You played " + playedCard);
+
+                discards.Add(playedCard);
+                players[playerTurn].RemoveAt(cardChosen - 1);
+
+                if (players[playerTurn].Count == 0)
+                {
+                    playing = false;
+                    winner = playersName[playerTurn];
                     break;
                 }
 
-                NextPlayer();
-            }
-        }
+                splitCard = discards[^1].Split(" ", 2);
+                currentColour = splitCard[0];
+                cardVal = splitCard.Length > 1 ? splitCard[1] : "Any";
 
-        private void UserPlay(Player user)
-        {
-            Console.WriteLine("Your hand:");
-            user.ShowHand();
-            Console.WriteLine("Choose card number to play or 0 to draw:");
-
-            int choice;
-            while (!int.TryParse(Console.ReadLine(), out choice) || choice < 0 || choice > user.Hand.Count)
-                Console.WriteLine("Invalid choice, try again:");
-
-            if (choice == 0)
-            {
-                user.DrawCard(deck);
-                Console.WriteLine("You drew a card.");
-                return;
-            }
-
-            var chosen = user.Hand[choice - 1];
-            if (!chosen.IsPlayableOnTop(discard.TopCard()))
-            {
-                Console.WriteLine("Card not playable, you must draw instead!");
-                user.DrawCard(deck);
-                return;
-            }
-
-            user.Hand.Remove(chosen);
-            discard.AddCard(chosen);
-            Console.WriteLine($"You played {chosen}");
-            chosen.ApplyEffect(this);
-        }
-
-        private void BotPlay(Player bot)
-        {
-            var card = bot.Hand.FirstOrDefault(c => c.IsPlayableOnTop(discard.TopCard()));
-            if (card != null)
-            {
-                bot.Hand.Remove(card);
-                discard.AddCard(card);
-                Console.WriteLine($"{bot.Name} plays {card}");
-                card.ApplyEffect(this);
-            }
-            else
-            {
-                bot.DrawCard(deck);
-                Console.WriteLine($"{bot.Name} draws a card.");
-            }
-        }
-
-        private void NextPlayer()
-        {
-            currentIndex = (currentIndex + direction + players.Count) % players.Count;
-        }
-
-        // Effects
-        public void SkipNextPlayer() => NextPlayer();
-        public void ReverseTurn() => direction *= -1;
-        public void DrawCardsToNextPlayer(int n)
-        {
-            int next = (currentIndex + direction + players.Count) % players.Count;
-            for (int i = 0; i < n; i++) players[next].DrawCard(deck);
-        }
-
-        public void ChooseNewColor(Card card)
-        {
-            var current = players[currentIndex];
-            CardColor chosenColor;
-
-            if (current.IsBot)
-            {
-                chosenColor = CardColor.Red; // Bot always pick Red
-                Console.WriteLine($"{current.Name} chooses {chosenColor}");
-            }
-            else
-            {
-                Console.WriteLine("Choose a color (Red/Blue/Green/Yellow):");
-                while (!Enum.TryParse(Console.ReadLine(), true, out chosenColor) ||
-                       chosenColor == CardColor.Wild)
+                if (currentColour == "Wild")
                 {
-                    Console.WriteLine("Invalid, choose again:");
+                    for (int x = 0; x < colours.Length; x++)
+                    {
+                        Console.WriteLine($"{x + 1}) {colours[x]}");
+                    }
+                    int newColour;
+                    do
+                    {
+                        Console.Write("What colour would you like to choose? ");
+                    } while (!int.TryParse(Console.ReadLine(), out newColour) || newColour < 1 || newColour > 4);
+
+                    currentColour = colours[newColour - 1];
                 }
+
+                if (cardVal == "Reverse")
+                {
+                    playDirection *= -1;
+                }
+                else if (cardVal == "Skip")
+                {
+                    playerTurn += playDirection;
+                    if (playerTurn >= numPlayers) playerTurn = 0;
+                    else if (playerTurn < 0) playerTurn = numPlayers - 1;
+                }
+                else if (cardVal == "Draw Two")
+                {
+                    int playerDraw = (playerTurn + playDirection + numPlayers) % numPlayers;
+                    players[playerDraw].AddRange(DrawCards(2));
+                }
+                else if (cardVal == "Draw Four")
+                {
+                    int playerDraw = (playerTurn + playDirection + numPlayers) % numPlayers;
+                    players[playerDraw].AddRange(DrawCards(4));
+                }
+
+                Console.WriteLine();
             }
-            card.SetColor(chosenColor);
+            else
+            {
+                Console.WriteLine("You can't play. You have to draw a card.");
+                players[playerTurn].AddRange(DrawCards(1));
+            }
+
+            playerTurn += playDirection;
+            if (playerTurn >= numPlayers) playerTurn = 0;
+            else if (playerTurn < 0) playerTurn = numPlayers - 1;
+        }
+
+        Console.WriteLine("Game Over");
+        Console.WriteLine($"{winner} is the Winner!");
+    }
+
+    static List<string> BuildDeck()
+    {
+        List<string> deck = new List<string>();
+        string[] values = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Draw Two", "Skip", "Reverse" };
+        string[] wilds = { "Wild", "Wild Draw Four" };
+
+        foreach (string colour in colours)
+        {
+            foreach (string value in values)
+            {
+                deck.Add($"{colour} {value}");
+                if (value != "0") deck.Add($"{colour} {value}");
+            }
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            deck.Add(wilds[0]);
+            deck.Add(wilds[1]);
+        }
+
+        return deck;
+    }
+
+    static void ShuffleDeck(List<string> deck)
+    {
+        for (int i = 0; i < deck.Count; i++)
+        {
+            int randPos = rand.Next(deck.Count);
+            (deck[i], deck[randPos]) = (deck[randPos], deck[i]);
         }
     }
 
-    // ================== MAIN ==================
-    class Program
+    static List<string> DrawCards(int numCards)
     {
-        static void Main(string[] args)
+        List<string> cardsDrawn = new List<string>();
+        for (int i = 0; i < numCards; i++)
         {
-            var game = new UnoGame();
-            game.AddPlayer(new Player("You")); // user
-            game.AddPlayer(new Player("Bot", isBot: true)); // bot
-            game.StartGame();
+            cardsDrawn.Add(unoDeck[0]);
+            unoDeck.RemoveAt(0);
         }
+        return cardsDrawn;
+    }
+
+    static void ShowHand(int player, List<string> playerHand)
+    {
+        Console.WriteLine($"Player {playersName[player]}'s Turn");
+        Console.WriteLine("Your Hand");
+        Console.WriteLine("------------------");
+        for (int i = 0; i < playerHand.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}) {playerHand[i]}");
+        }
+        Console.WriteLine();
+    }
+
+    static bool CanPlay(string colour, string value, List<string> playerHand)
+    {
+        foreach (string card in playerHand)
+        {
+            if (card.Contains("Wild")) return true;
+            if (card.Contains(colour) || card.Contains(value)) return true;
+        }
+        return false;
     }
 }
