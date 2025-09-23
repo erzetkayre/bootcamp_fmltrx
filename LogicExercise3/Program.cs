@@ -9,6 +9,7 @@ while (!int.TryParse(Console.ReadLine(), out number))
 var words = new Dictionary<int, string>
 {
     {3, "foo"},
+    {4, "baz"},
     {5, "bar"},
     {7, "jazz"},
     {9, "huzz"},
